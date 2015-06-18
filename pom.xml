@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<prerequisites>
+		<maven>2.2.0</maven>
+	</prerequisites>
+
+	<parent>
+		<groupId>org.boost</groupId>
+		<artifactId>boostSDK</artifactId>
+		<version>1.58.0-SNAPSHOT</version>
+		<relativePath>boostSDK/pom.xml</relativePath>
+	</parent>
+
+	<groupId>org.boost</groupId>
+	<artifactId>boostSDKAggregate</artifactId>
+	<packaging>pom</packaging>
+	<name>Boost SDK aggregate</name>
+	<description>Boost SDK aggregate for deploying modules of captured artifacts</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.dl>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</version.dl>
+		<zip.download.url>http://sourceforge.net/projects/boost/files/boost-binaries/${version.dl}/boost_${version.ul}-bin-msvc-all-32-64.7z/download</zip.download.url>
+		<zip.dowload.file>${project.basedir}/download/boost-msvc-all.7z</zip.dowload.file>
+	</properties>
+
+	<modules>
+		<module>boostSDK</module>
+		<module>boost-api-nar</module>
+		<module>boost-regex-nar</module>
+		<module>boost-signals-nar</module>
+		<module>boost-system-nar</module>
+		<module>boost-chrono-nar</module>
+		<module>boost-date-time-nar</module>
+		<module>boost-thread-nar</module>
+		<module>boost-locale-nar</module>
+		<module>boost-filesystem-nar</module>
+		<module>boost-log-nar</module>
+		<!-- still to work out dependencies
+		<module>boost-bzip-nar</module>
+		<module>boost-container-nar</module>
+		<module>boost-context-nar</module>
+		<module>boost-coroutine-nar</module>
+		<module>boost-graph-nar</module>
+		<module>boost-iostreams-nar</module>
+		<module>boost-prg-exec-monitor-nar</module>
+		<module>boost-program-options-nar</module>
+		<module>boost-python-nar</module>
+		<module>boost-random-nar</module>
+		<module>boost-serialization-nar</module>
+		<module>boost-wserialization-nar</module>
+		<module>boost-timer-nar</module>
+		<module>boost-unit-test-framework-nar</module>
+		<module>boost-wave-nar</module>
+		<module>boost-zlib-nar</module>
+		 -->
+		<!--  To work out varients and packaging - c99/tr1 x l/f
+		<module>boost-math-nar</module> -->
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>Build Advice</id>
+						<phase>initialize</phase>
+						<goals><goal>run</goal></goals>
+						<configuration>
+							<target name="Build Advice">
+								<echo>
+Download zips - not to a cleaned location.
+mvn initialize -N -Pdownload
+
+Prepare for building modules
+mvn clean initialize -Punpack
+
+Deploy modules
+mvn deploy
+								</echo>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- don't install/deploy this aggregate pom -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>download</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>download</id>
+								<phase>initialize</phase>
+								<goals><goal>run</goal></goals>
+								<configuration>
+									<target name="download">
+										<mkdir dir="${basedir}/download/"/>
+ 										<get src="${zip.download.url}" dest="${zip.dowload.file}" />
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>unpack</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<dependencies>
+							<dependency> <!-- ant-compress uses this, earlier versions are broken against wx.7z files,  in fact 1.8.1 is still broken, but better... -->
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-compress</artifactId>
+								<version>1.9</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-compress</artifactId>
+								<version>1.4</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>prepare</id>
+								<phase>initialize</phase>
+								<goals><goal>run</goal></goals>
+								<configuration>
+									<target name="prepare">
+										<echo> Using commons-compress:1.9 - earlier versions fail
+	---
+	unzip boost_${version.ul} src="${zip.dowload.file}"
+	This is a large file, it takes a long time to process.
+	---</echo>
+
+										<taskdef resource="org/apache/ant/compress/antlib.xml" classpathref="maven.plugin.classpath"/>
+										<un7z
+											src="${zip.dowload.file}"
+											dest="${project.basedir}/target" >
+											<!-- Working with a single msvc version?
+											<patternset>
+												<include name="boost_${version.ul}/boost/**/*"/>
+												<include name="boost_${version.ul}/lib64-msvc-12.0/**/*"/>
+												<include name="boost_${version.ul}/lib32-msvc-12.0/**/*"/>
+											</patternset> -->
+										</un7z>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>

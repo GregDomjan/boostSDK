@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.boost</groupId>
+		<artifactId>boostSDK</artifactId>
+		<version>1.58.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>boost-api-nar</artifactId>
+	<name>Boost api (includes)</name>
+	<description>Boost Includes</description> <!--  - in future may only be those includes that don't import the libs, individual libs holding their own headers -->
+	<packaging>nar</packaging>
+
+	<build>
+		<resources>
+			<resource>
+				<targetPath>${nar.src.noarch}\include\boost</targetPath>
+				<filtering>false</filtering>
+				<directory>${zip.noarch.unpack}</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>com.github.maven-nar</groupId>
+				<artifactId>nar-maven-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

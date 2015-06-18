@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.boost</groupId>
+		<artifactId>boostSDK</artifactId>
+		<version>1.58.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>boost-log-nar</artifactId>
+	<name>Boost Log</name>
+	<description>Portable C++ logging.</description>
+	<packaging>nar</packaging>
+	
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>boost-system-nar</artifactId>
+			<version>${project.version}</version>
+			<type>nar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>boost-filesystem-nar</artifactId>
+			<version>${project.version}</version>
+			<type>nar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>boost-date-time-nar</artifactId>
+			<version>${project.version}</version>
+			<type>nar</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>boost-thread-nar</artifactId>
+			<version>${project.version}</version>
+			<type>nar</type>
+		</dependency>
+	</dependencies>
+	
+	<properties>
+		<boost.module>log</boost.module>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.maven-nar</groupId>
+				<artifactId>nar-maven-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>

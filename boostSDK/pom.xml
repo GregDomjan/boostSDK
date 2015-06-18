@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<prerequisites>
+		<maven>2.2.0</maven>
+	</prerequisites>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>9</version>
+	</parent>
+
+	<groupId>org.boost</groupId>
+	<artifactId>boostSDK</artifactId>
+	<version>1.58.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Boost</name>
+	<description>Boost Modules</description>
+	
+	<url>https://www.boost.org/</url>
+	<organization>
+		<name>Boost Community</name>
+		<url>http://www.boost.org/community/</url>
+	</organization>
+		
+	<!-- hacked from http://code.google.com/p/boost-maven-project/	-->
+	<licenses>
+		<license>
+			<name>Boost Software License - Version 1.0</name>
+			<url>http://www.boost.org/LICENSE_1_0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<issueManagement>
+		<system>Trac</system>
+		<url>http://svn.boost.org/trac/boost</url>
+	</issueManagement>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.ul>${parsedVersion.majorVersion}_${parsedVersion.minorVersion}_${parsedVersion.incrementalVersion}</version.ul>
+		<boost.module>no-sdk-module</boost.module>
+
+		<zip.unpack>target/boost_${version.ul}</zip.unpack>	
+		<zip.noarch.unpack>${project.basedir}/../${zip.unpack}/boost</zip.noarch.unpack>
+		<zip.x64.unpack>${project.basedir}/../${zip.unpack}/lib64-msvc-12.0</zip.x64.unpack>
+		<zip.x86.unpack>${project.basedir}/../${zip.unpack}/lib32-msvc-12.0</zip.x86.unpack>
+
+		<nar.src>${project.build.directory}\nar\${project.artifactId}-${project.version}</nar.src>
+		<nar.src.win.x64>${nar.src}-amd64-Windows-msvc</nar.src.win.x64>
+		<nar.src.win.x64.sh>${nar.src.win.x64}-shared\lib\amd64-Windows-msvc\shared</nar.src.win.x64.sh>
+		<nar.src.win.x64.st>${nar.src.win.x64}-static\lib\amd64-Windows-msvc\static</nar.src.win.x64.st>
+		<nar.src.win.x86>${nar.src}-x86-Windows-msvc</nar.src.win.x86>
+		<nar.src.win.x86.sh>${nar.src.win.x86}-shared\lib\x86-Windows-msvc\shared</nar.src.win.x86.sh>
+		<nar.src.win.x86.st>${nar.src.win.x86}-static\lib\x86-Windows-msvc\static</nar.src.win.x86.st>
+		<nar.src.noarch>${nar.src}-noarch</nar.src.noarch>
+	</properties>
+
+	<build>
+		<resources>
+			<resource>
+				<targetPath>${nar.src.win.x86.st}</targetPath>
+				<filtering>false</filtering>
+				<directory>${zip.x86.unpack}</directory>
+				<includes>
+					<include>libboost_${boost.module}*.lib</include>
+				</includes>
+			</resource>
+			<resource>
+				<targetPath>${nar.src.win.x64.st}</targetPath>
+				<filtering>false</filtering>
+				<directory>${zip.x64.unpack}</directory>
+				<includes>
+					<include>libboost_${boost.module}*.lib</include>
+				</includes>
+			</resource>
+			<resource>
+				<targetPath>${nar.src.win.x86.sh}</targetPath>
+				<filtering>false</filtering>
+				<directory>${zip.x86.unpack}</directory>
+				<includes>
+					<include>boost_${boost.module}*.dll</include>
+					<include>boost_${boost.module}*.lib</include>
+				</includes>
+			</resource>
+			<resource>
+				<targetPath>${nar.src.win.x64.sh}</targetPath>
+				<filtering>false</filtering>
+				<directory>${zip.x64.unpack}</directory>
+				<includes>
+					<include>boost_${boost.module}*.dll</include>
+					<include>boost_${boost.module}*.lib</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>parse-version</id>
+						<goals>
+							<goal>parse-version</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.github.maven-nar</groupId>
+					<artifactId>nar-maven-plugin</artifactId>
+					<version>3.0.0</version>
+					<extensions>true</extensions>
+					<configuration>
+						<os>Windows</os>
+						<layout>NarLayout21</layout>
+						<output>libboost_${boost.module}</output>
+						<skip>true</skip><!--  avoid download/build/testbuild while packaging -->
+					</configuration>
+					<executions>
+						<execution>
+							<id>package-only</id>
+							<goals>
+								<goal>nar-package</goal>
+							</goals>
+							<configuration>
+								<skip>false</skip>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>
